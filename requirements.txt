@@ -6,3 +6,5 @@ tensorboard
 pyyaml
 tqdm
 numpy
+datasets
+pillow

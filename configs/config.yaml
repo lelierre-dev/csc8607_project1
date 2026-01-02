@@ -1,38 +1,42 @@
 # Fichier de configuration générique (à adapter au projet)
 dataset:
-  name: TODO                # ex: "CIFAR10", "IMDB", ...
-  root: "./data"            # chemin local pour les données
+  name: "zh-plus/tiny-imagenet"  # HuggingFace Datasets
+  root: "./data"                 # cache HF datasets
   split:                    # optionnel : noms/tailles de splits
-    train: TODO
-    val: TODO
-    test: TODO
-  download: true            # si supporté
-  num_workers: 4
+    train: train
+    val: validation
+    test: validation
+  download: true            # ignoré ici (HF gère le téléchargement)
+  cache_in_ram: true       # true => charge toutes les images en RAM (uint8) avant train
+  cache_max_items: null     # optionnel: limite (debug), ex: 5000
+  num_workers: 0
   shuffle: true
 
 preprocess:
   # transformations de base (ex: resize, normalize)
-  resize:                   # ex: [32, 32] ou null
-  normalize:                # ex: {"mean": [0.5,0.5,0.5], "std":[0.5,0.5,0.5]} ou null
+  resize: null              # Tiny ImageNet est déjà en 64x64
+  normalize:                # stats ImageNet (baseline)
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
   text_tokenizer:           # pour NLP : nom ou paramètres, sinon null
 
 augment:
   # data augmentation (laisser null si non utilisée)
-  random_flip:              # true/false
-  random_crop:              # paramètres ou null
-  color_jitter:             # paramètres ou null
+  random_flip: true
+  random_crop: true         # => crop 64 avec padding 4
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.05
   spec_augment:             # pour audio : paramètres ou null
 
 model:
-  type: TODO                # ex: "resnet18", "mlp", "lstm", ...
-  num_classes: TODO
-  input_shape:              # ex: [3, 32, 32] ou null
-  hidden_sizes:             # ex: [256, 128] ou null
-  activation: relu          # ex: relu, gelu, tanh...
-  dropout: 0.0              # ex: 0.0–0.5
-  batch_norm: false         # true/false
-  residual: false           # true/false
-  attention: false          # true/false
+  type: tiny_cnn
+  num_classes: 200
+  input_shape: [3, 64, 64]
+  stage_repeats: [2, 2, 2]   # (N1,N2,N3) dans {1,2,3}
+  stage_channels: [64, 128, 256]  # (C1,C2,C3)
   rnn:                      # pour RNN/LSTM/GRU : paramètres ou null
     type: null              # lstm/gru
     hidden_size: null
@@ -42,14 +46,14 @@ model:
 train:
   seed: 42
   device: auto              # "cpu", "cuda", ou "auto"
-  batch_size: 64
+  batch_size: 128
   epochs: 10
   max_steps: null           # entier ou null
   overfit_small: false      # true pour sur-apprendre sur un petit échantillon
 
   optimizer:
     name: adam              # sgd/adam/rmsprop
-    lr: 0.001
+    lr: 0.002
     weight_decay: 0.0
     momentum: 0.9           # utile si SGD
 
@@ -68,6 +72,10 @@ hparams:                    # espace pour mini grid search
   lr: [0.0005, 0.001, 0.005]
   batch_size: [32, 64]
   weight_decay: [0.0, 0.0005]
+
+  # Optionnel: tuner le modèle (si tu veux)
+  # stage_repeats: [[1,1,1], [2,2,2], [3,3,3]]
+  # stage_channels: [[48,96,192], [64,128,256]]
 
 paths:
   runs_dir: "./runs"
