@@ -148,6 +148,7 @@ def get_dataloaders(config: dict):
     À implémenter.
     """
     from datasets import load_dataset
+    from datasets.download.download_config import DownloadConfig
 
     dataset_cfg: dict[str, Any] = (config or {}).get("dataset", {}) or {}
     train_cfg: dict[str, Any] = (config or {}).get("train", {}) or {}
@@ -156,7 +157,17 @@ def get_dataloaders(config: dict):
     cache_root = dataset_cfg.get("root") or "./data"
     cache_dir = str(Path(cache_root).expanduser())
 
-    hf_ds = load_dataset(dataset_name, cache_dir=cache_dir)
+    keep_in_memory = dataset_cfg.get("keep_in_memory", None)
+    local_files_only = bool(dataset_cfg.get("local_files_only", False))
+    download_config = DownloadConfig(cache_dir=cache_dir, local_files_only=local_files_only)
+
+    hf_ds = load_dataset(
+        dataset_name,
+        cache_dir=cache_dir,
+        keep_in_memory=keep_in_memory,
+        download_config=download_config,
+        download_mode="reuse_cache_if_exists",
+    )
     available_splits = list(hf_ds.keys())
 
     split_cfg = dataset_cfg.get("split") or {}

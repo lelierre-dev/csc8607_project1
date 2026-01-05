@@ -9,7 +9,7 @@ dataset:
   download: true            # ignoré ici (HF gère le téléchargement)
   cache_in_ram: true       # true => charge toutes les images en RAM (uint8) avant train
   cache_max_items: null     # optionnel: limite (debug), ex: 5000
-  num_workers: 0
+  num_workers: 2
   shuffle: true
 
 preprocess:
