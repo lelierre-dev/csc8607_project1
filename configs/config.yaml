@@ -22,13 +22,13 @@ preprocess:
 
 augment:
   # data augmentation (laisser null si non utilisée)
-  random_flip: false
-  random_crop: false         # => crop 64 avec padding 4
-  color_jitter: false
-    #brightness: 0.2
-    #contrast: 0.2
-    #saturation: 0.2
-    #hue: 0.05
+  random_flip: true
+  random_crop: true         # => crop 64 avec padding 4
+  color_jitter: 
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.05
   spec_augment:             # pour audio : paramètres ou null
 
 model:
@@ -49,9 +49,9 @@ train:
   batch_size: 128
   epochs: 100
   max_steps: null           # entier ou null
-  overfit_small: true      # true pour sur-apprendre sur un petit échantillon
-  overfit_small_size: 4096   # taille du sous-échantillon quand overfit_small=true
-  val_subset_size: 1000      # optionnel: nombre d'exemples utilisés pour la validation (null = tout)
+  overfit_small: false      # true pour sur-apprendre sur un petit échantillon
+  #overfit_small_size: 4096   # taille du sous-échantillon quand overfit_small=true
+  val_subset_size: null      # optionnel: nombre d'exemples utilisés pour la validation (null = tout)
 
   optimizer:
     name: adam              # sgd/adam/rmsprop
