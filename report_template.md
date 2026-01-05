@@ -132,6 +132,20 @@ Expliquez le rôle des **2 hyperparamètres spécifiques au modèle** (ceux impo
 
 **M3.** Donnez la **taille du sous-ensemble**, les **hyperparamètres** du modèle utilisés, et la **courbe train/loss** (capture). Expliquez ce qui prouve l’overfit.
 
+
+Nom de run (ENTER pour auto): overfit2_withoutAugment_limitedTrainAndVal
+Device sélectionné: mps
+Generating train split: 100%|███████████| 100000/100000 [00:00<00:00, 1223810.34 examples/s]
+Generating valid split: 100%|██████████████| 10000/10000 [00:00<00:00, 759589.99 examples/s]
+[data] Cache en RAM activé (uint8). Cela peut consommer plusieurs Go selon la machine.
+Taille train utilisée: 4096
+Taille val utilisée:   1000
+Run: runs/overfit2_withoutAugment_limitedTrainAndVal | Best ckpt: artifacts/best.ckpt | Best val acc: 0.3150
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
 ---
 
 ## 4) LR finder

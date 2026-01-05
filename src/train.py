@@ -87,10 +87,11 @@ def train_from_config(
     # Data
     train_loader, val_loader, _, meta = get_dataloaders(config)
     if overfit_small or bool(train_cfg.get("overfit_small", False)):
-        # Sur-apprentissage sur un tout petit subset
+        # Sur-apprentissage sur un petit subset configurable
         from torch.utils.data import Subset
 
-        n = min(256, len(train_loader.dataset))
+        overfit_size = int(train_cfg.get("overfit_small_size", 256))
+        n = min(overfit_size, len(train_loader.dataset))
         idx = list(range(n))
         subset = Subset(train_loader.dataset, idx)
         train_loader = torch.utils.data.DataLoader(
@@ -100,6 +101,23 @@ def train_from_config(
             num_workers=train_loader.num_workers,
             pin_memory=train_loader.pin_memory,
         )
+
+    # Optionnel: réduire la taille de la validation pour aller plus vite (debug)
+    val_subset_size = train_cfg.get("val_subset_size", None)
+    if val_subset_size is not None:
+        from torch.utils.data import Subset
+
+        n_val = min(int(val_subset_size), len(val_loader.dataset))
+        val_loader = torch.utils.data.DataLoader(
+            Subset(val_loader.dataset, list(range(n_val))),
+            batch_size=val_loader.batch_size,
+            shuffle=False,
+            num_workers=val_loader.num_workers,
+            pin_memory=val_loader.pin_memory,
+        )
+
+    print(f"Taille train utilisée: {len(train_loader.dataset)}")
+    print(f"Taille val utilisée:   {len(val_loader.dataset)}")
 
     # Model
     if "model" not in config:
@@ -210,12 +228,23 @@ def main():
     parser.add_argument("--overfit_small", action="store_true")
     parser.add_argument("--max_epochs", type=int, default=None)
     parser.add_argument("--max_steps", type=int, default=None)
+    parser.add_argument("--run_name", type=str, default=None)
     # Ajoutez d'autres arguments si nécessaire (batch_size, lr, etc.)
     args = parser.parse_args()
 
     config = _load_config(args.config)
+    run_name = args.run_name
+    if run_name is None:
+        try:
+            user_input = input("Nom de run (ENTER pour auto): ").strip()
+            if user_input:
+                run_name = user_input
+        except EOFError:
+            pass
+
     result = train_from_config(
         config,
+        run_name=run_name,
         override_seed=args.seed,
         overfit_small=bool(args.overfit_small),
         max_epochs=args.max_epochs,
