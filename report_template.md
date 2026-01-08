@@ -160,6 +160,9 @@ Run: runs/overfit2_withoutAugment_limitedTrainAndVal | Best ckpt: artifacts/best
 
 **M4.** Justifiez en 2–3 phrases le choix du **LR** et du **weight decay**.
 
+1824 sans weight decay
+
+
 ---
 
 ## 5) Mini grid search (rapide)

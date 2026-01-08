@@ -139,6 +139,8 @@ def train_from_config(
     momentum = float(optim_cfg.get("momentum", 0.9))
     if opt_name == "sgd":
         optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
+    elif opt_name in ("adamw", "adam_w"):
+        optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     else:
         optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 

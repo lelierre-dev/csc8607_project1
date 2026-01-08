@@ -54,7 +54,7 @@ train:
   val_subset_size: null      # optionnel: nombre d'exemples utilisés pour la validation (null = tout)
 
   optimizer:
-    name: adam              # sgd/adam/rmsprop
+    name: adam              # sgd/adam/adamw/rmsprop
     lr: 0.002
     weight_decay: 0.0
     momentum: 0.9           # utile si SGD
