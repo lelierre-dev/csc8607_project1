@@ -123,17 +123,15 @@ Expliquez le rôle des **2 hyperparamètres spécifiques au modèle** (ceux impo
 
 ## 3) Overfit « petit échantillon »
 
-- **Sous-ensemble train** : `N = ____` exemples
-- **Hyperparamètres modèle utilisés** (les 2 à régler) : `_____`, `_____`
-- **Optimisation** : LR = `_____`, weight decay = `_____` (0 ou très faible recommandé)
-- **Nombre d’époques** : `_____`
+- **Sous-ensemble train** : `N = 4096` exemples
+- **Sous-ensemble val** : `N = 1000` exemples
+- **Hyperparamètres modèle utilisés** (les 2 à régler) : `stage_repeats = [2, 2, 2]`, `stage_channels = [64, 128, 256]`
+- **Optimisation** : LR = `0.002`, weight decay = `0` 
+- **Nombre d’époques** : `100`
 
-> _Insérer capture TensorBoard : `train/loss` montrant la descente vers ~0._
-
-**M3.** Donnez la **taille du sous-ensemble**, les **hyperparamètres** du modèle utilisés, et la **courbe train/loss** (capture). Expliquez ce qui prouve l’overfit.
-
-
-Nom de run (ENTER pour auto): overfit2_withoutAugment_limitedTrainAndVal
+----
+**run :** 
+overfit2_withoutAugment_limitedTrainAndVal
 Device sélectionné: mps
 Generating train split: 100%|███████████| 100000/100000 [00:00<00:00, 1223810.34 examples/s]
 Generating valid split: 100%|██████████████| 10000/10000 [00:00<00:00, 759589.99 examples/s]
@@ -142,25 +140,41 @@ Taille train utilisée: 4096
 Taille val utilisée:   1000
 Run: runs/overfit2_withoutAugment_limitedTrainAndVal | Best ckpt: artifacts/best.ckpt | Best val acc: 0.3150
 
+----
+
 ![alt text](image.png)
 
 ![alt text](image-1.png)
+
+Le modèle fait chuter train/loss vers 0 (environ 0.001), ce qui indique une mémorisation du petit train. En parallèle, val/loss augmente (environ 11.7) et val/accuracy plafonne (environ 0.31) : l’écart train/val montre une mauvaise généralisation, donc un overfit.
+
+NB : pour avoir un overfit, j'ai desactivé les augmentations afin de faciliter la mémorisation du modèle
 
 ---
 
 ## 4) LR finder
 
 - **Méthode** : balayage LR (log-scale), quelques itérations, log `(lr, loss)`
-- **Fenêtre stable retenue** : `_____ → _____`
+- **Fenêtre stable retenue** : `1e-4 → 1e-2`
 - **Choix pour la suite** :
-  - **LR** = `_____`
-  - **Weight decay** = `_____` (valeurs classiques : 1e-5, 1e-4)
+  - **LR** = `1e-3 ou 0.001`
+  - **Weight decay** = `1e-4` (valeur classique)
 
-> _Insérer capture TensorBoard : courbe LR → loss._
+
 
 **M4.** Justifiez en 2–3 phrases le choix du **LR** et du **weight decay**.
 
-1824 sans weight decay
+commande :  python -m src.lr_finder --config configs/config.yaml --min_lr 1e-5 --max_lr 1e-1 --num_iters 200
+
+j'ai deja lancer avec les valeurs par defaut (min_lr=1e-6, max_lr=1), on peut le voir dans la run bleu clair, puis pour y voir plus clairement j'ai lancer une deuxième run en resserant la recherche lr de min_lr 1e-5 --max_lr 1e-1. (courbe rose foncé).
+
+![alt text](image-2.png)
+
+Pour choisir le meilleur Learning Rate (LR) à partir de ces graphiques (méthode de Leslie Smith), on ne cherche pas le point où la perte (loss) est la plus basse, mais plutôt la zone où elle descend le plus rapidement.
+
+On identifie que la courbe est la plus raide vers le step 100, le LR correspondant est 0.001
+
+Weight decay : Pour Tiny ImageNet, un dataset avec beaucoup de classes mais des images de petite taille (64×64), la valeur 0.0001 est le standard pour Adam. Elle aide la Batch Normalization (présente dans ton modèle) à mieux généraliser
 
 
 ---
