@@ -47,7 +47,7 @@ train:
   seed: 42
   device: auto              # "cpu", "cuda", ou "auto"
   batch_size: 128
-  epochs: 3
+  epochs: 20
   max_steps: null           # entier ou null
   overfit_small: false      # true pour sur-apprendre sur un petit échantillon
   #overfit_small_size: 4096   # taille du sous-échantillon quand overfit_small=true
@@ -55,8 +55,8 @@ train:
 
   optimizer:
     name: adam              # sgd/adam/adamw/rmsprop
-    lr: 0.002
-    weight_decay: 0.0001
+    lr: 0.0005
+    weight_decay: 1e-5
     momentum: 0.9           # utile si SGD
 
   scheduler:

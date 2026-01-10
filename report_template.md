@@ -141,10 +141,12 @@ Taille val utilisée:   1000
 Run: runs/overfit2_withoutAugment_limitedTrainAndVal | Best ckpt: artifacts/best.ckpt | Best val acc: 0.3150
 
 ----
+**M3.** Donnez la **taille du sous-ensemble**, les **hyperparamètres** du modèle utilisés, et la **courbe train/loss** (capture). Expliquez ce qui prouve l’overfit.
 
 ![alt text](image.png)
 
 ![alt text](image-1.png)
+
 
 Le modèle fait chuter train/loss vers 0 (environ 0.001), ce qui indique une mémorisation du petit train. En parallèle, val/loss augmente (environ 11.7) et val/accuracy plafonne (environ 0.31) : l’écart train/val montre une mauvaise généralisation, donc un overfit.
 
