@@ -45,7 +45,7 @@ model:
 
 train:
   seed: 42
-  device: auto              # "cpu", "cuda", ou "auto"
+  device: auto              # "cpu", "cuda", "mps", ou "auto"
   batch_size: 128
   epochs: 20
   max_steps: null           # entier ou null
@@ -55,7 +55,7 @@ train:
 
   optimizer:
     name: adam              # sgd/adam/adamw/rmsprop
-    lr: 0.0005
+    lr: 0.002
     weight_decay: 1e-5
     momentum: 0.9           # utile si SGD
 
