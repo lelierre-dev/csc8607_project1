@@ -1,0 +1,99 @@
+dataset:
+  name: zh-plus/tiny-imagenet
+  root: ./data
+  split:
+    train: train
+    val: validation
+    test: validation
+  download: true
+  cache_in_ram: true
+  cache_max_items: null
+  num_workers: 2
+  shuffle: true
+preprocess:
+  resize: null
+  normalize:
+    mean:
+    - 0.485
+    - 0.456
+    - 0.406
+    std:
+    - 0.229
+    - 0.224
+    - 0.225
+  text_tokenizer: null
+augment:
+  random_flip: true
+  random_crop: true
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.05
+  spec_augment: null
+model:
+  type: tiny_cnn
+  num_classes: 200
+  input_shape:
+  - 3
+  - 64
+  - 64
+  stage_repeats: &id001
+  - 2
+  - 2
+  - 2
+  stage_channels: &id002
+  - 64
+  - 128
+  - 256
+  rnn:
+    type: null
+    hidden_size: null
+    num_layers: null
+    bidirectional: false
+train:
+  seed: 42
+  device: auto
+  batch_size: 128
+  epochs: 3
+  max_steps: null
+  overfit_small: false
+  val_subset_size: null
+  optimizer:
+    name: adam
+    lr: 0.001
+    weight_decay: 1.0e-05
+    momentum: 0.9
+  scheduler:
+    name: none
+    step_size: 10
+    gamma: 0.1
+    warmup_steps: 0
+metrics:
+  classification:
+  - accuracy
+  regression: []
+hparams:
+  lr:
+  - 0.0005
+  - 0.001
+  - 0.002
+  weight_decay:
+  - 1e-5
+  - 1e-4
+  stage_repeats:
+  - - 1
+    - 1
+    - 1
+  - *id001
+  - - 3
+    - 3
+    - 3
+  stage_channels:
+  - - 48
+    - 96
+    - 192
+  - *id002
+paths:
+  runs_dir: ./runs
+  artifacts_dir: ./artifacts
