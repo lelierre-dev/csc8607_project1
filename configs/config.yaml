@@ -1,12 +1,12 @@
 # Fichier de configuration générique (à adapter au projet)
 dataset:
-  name: "zh-plus/tiny-imagenet"  # HuggingFace Datasets
-  root: "./data"                 # cache HF datasets
-  split:                    # optionnel : noms/tailles de splits
+  name: "zh-plus/tiny-imagenet"  
+  root: "./data"                 
+  split:                    
     train: train
     val: validation
     test: validation
-  download: true            # ignoré ici (HF gère le téléchargement)
+  download: true            
   cache_in_ram: true       # true => charge toutes les images en RAM (uint8) avant train
   cache_max_items: null     # optionnel: limite (debug), ex: 5000
   num_workers: 2
@@ -18,7 +18,7 @@ preprocess:
   normalize:                # stats ImageNet (baseline)
     mean: [0.485, 0.456, 0.406]
     std: [0.229, 0.224, 0.225]
-  text_tokenizer:           # pour NLP : nom ou paramètres, sinon null
+  text_tokenizer:           
 
 augment:
   # data augmentation (laisser null si non utilisée)
@@ -35,8 +35,8 @@ model:
   type: tiny_cnn
   num_classes: 200
   input_shape: [3, 64, 64]
-  stage_repeats: [2, 2, 2]   # (N1,N2,N3) dans {1,2,3}
-  stage_channels: [64, 128, 256]  # (C1,C2,C3)
+  stage_repeats: [2, 2, 2]   
+  stage_channels: [64, 128, 256]  
   rnn:                      # pour RNN/LSTM/GRU : paramètres ou null
     type: null              # lstm/gru
     hidden_size: null
@@ -57,7 +57,7 @@ train:
     name: adam              # sgd/adam/adamw/rmsprop
     lr: 0.002
     weight_decay: 1e-5
-    momentum: 0.9           # utile si SGD
+    momentum: 0.9           
 
   scheduler:
     name: none              # none/step/cosine/onecycle

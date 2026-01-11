@@ -36,7 +36,7 @@ mean = torch.tensor(mean)[:,None,None]
 std  = torch.tensor(std)[:,None,None]
 def unnorm(x): return (x*std)+mean
 
-out = Path("artifacts"); out.mkdir(exist_ok=True)
+out = Path("artifactsSave"); out.mkdir(exist_ok=True)
 save_image(make_grid(unnorm(xs_noaug).clamp(0,1), nrow=8), out/"examples_noaug_same.png")
 save_image(make_grid(unnorm(xs_aug).clamp(0,1), nrow=8), out/"examples_aug_same.png")
-print("OK -> artifacts/examples_noaug_same.png, artifacts/examples_aug_same.png")
+print("OK -> artifactsSave/examples_noaug_same.png, artifactsSave/examples_aug_same.png")

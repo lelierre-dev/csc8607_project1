@@ -241,14 +241,14 @@ Weight decay : Pour Tiny ImageNet, un dataset avec beaucoup de classes mais des 
 
 **M5.** Présentez la **meilleure combinaison** (selon validation) et commentez l’effet des **2 hyperparamètres de modèle** sur les courbes (stabilité, vitesse, overfit).
 
-Le meilleur run du grid search est gs_034 : LR = 0.002, WD = 1e-4, stage_channels = [64,128,256], stage_repeats = [2,2,2]. Il obtient la meilleure val/accuracy @ epoch=3 (0.2478) et la meilleure val/loss (3.2759) parmi les runs comparés.
+Le meilleur run du grid search est gs_034 : LR = 0.002, WD = 1e-4, stage_channels = [64,128,256], stage_repeats = [2,2,2]. Il obtient la meilleure val/accuracy (0.2478) et la meilleure val/loss (3.2759) parmi les runs comparés.
 
 **Effet des 2 hyperparamètres de modèle (channels & repeats) sur les courbes :** 
 stage_repeats (profondeur) : passer de [1,1,1] à [2,2,2] accélère clairement l’apprentissage (val/accuracy monte plus vite, val/loss baisse davantage) tout en restant stable. En [3,3,3], le gain n’est pas systématique et la capacité plus élevée peut favoriser un plateau plus tôt / plus d’overfit.
 
-stage_channels (largeur) : [64,128,256] donne en général une meilleure convergence initiale que [48,96,192] (plus de capacité donc meilleure val/accuracy, val/loss plus basse). En contrepartie, la largeur augmente le risque d’overfit si la régularisation est trop faible ; ici, WD=1e-4 aide à garder des courbes propres.
+stage_channels (largeur) : [64,128,256] donne en général une meilleure convergence initiale que [48,96,192] (plus de capacité donc meilleure val/accuracy, val/loss plus basse). En contrepartie, la largeur augmente le risque d’overfit si la régularisation est trop faible. Ici, WD=1e-4 aide à garder des courbes propres.
 
-Conclusion : la meilleure config correspond à un bon compromis capacité/stabilité : largeur élevée + profondeur modérée ([64,128,256] et [2,2,2]).
+Conclusion : la meilleure config (34) correspond à un bon compromis capacité/stabilité : largeur élevée + profondeur modérée ([64,128,256] et [2,2,2]).
 
 les 36 courbes issues du gridseach (analyse dans le point 7):
 
@@ -313,7 +313,7 @@ Je m'attendais à que le modèle (28) généralise moins bien avec un weight dec
 ![alt text](image-15.png)
 (même architecture sauf le LR, voir tableau point 5, run 4 vs run 28)
 
-Je m’attendais à ce qu’avec un LR plus faible on apprenne moins vite au début puis qu’on rattrape (voire dépasse) à la fin, mais les graphiques montrent qu’à 20 epochs le run 4 reste derrière en val/accuracy, même s’il a une val/loss plus faible, ce qui suggère qu’il est simplement plus lent et qu’il aurait probablement besoin de plus d’epochs pour rattraper.
+Je m’attendais à ce qu’avec un LR plus faible, on apprenne moins vite au début puis qu’on rattrape (voire dépasse) à la fin, mais les graphiques montrent qu’à 20 epochs le run 4 reste derrière en val/accuracy, même s’il a une val/loss plus faible, ce qui suggère qu’il est simplement plus lent et qu’il aurait probablement besoin de plus d’epochs pour rattraper.
 
 ### comparaison stage_channel (3 epochs)
 
@@ -325,7 +325,7 @@ Je m’attendais à ce qu’avec un LR plus faible on apprenne moins vite au dé
 
 ![alt text](image-11.png)
 
-Avec un LR/WD et repeats identiques, augmenter stage_channels de [48,96,192] à [64,128,256] améliore les performances (train/loss et val/loss plus faibles, val/accuracy plus élevée), ce qui nous dit qu’un modèle plus large apprend et généralise mieux à court terme.
+Avec un LR/WD et repeats identiques, augmenter stage_channels de [48,96,192] (bleu) à [64,128,256] (rose) améliore les performances (train/loss et val/loss plus faibles, val/accuracy plus élevée), ce qui nous dit qu’un modèle plus large apprend et généralise mieux à court terme.
 
 
 ---
@@ -339,7 +339,9 @@ Avec un LR/WD et repeats identiques, augmenter stage_channels de [48,96,192] à 
 
 Étant donné que mon grid search était volontairement court (3 epochs par run par contrainte de compute), plusieurs configurations obtenaient des résultats très proches (en particulier run 34 vs run 28), ce qui rendait le classement "flou" à si peu d’epochs. J’ai donc réalisé une itération supplémentaire en approfondissant l’entraînement (20 epochs) de la seconde configuration “gagnante” du grid search (run 28), afin de tester l’effet d’un weight decay plus faible à architecture et learning rate identiques (WD 1e-5 au lieu de 1e-4). J’ai également entraîné la run 4 (LR plus faible) comme point de comparaison.
 
-(Résulat visible au point 7.) 
+La configuration 28 à montré de meilleurs resultats.
+
+(Résulat visible au point 7, comparaison du weight decay.) 
 
 
 ---
@@ -361,14 +363,17 @@ Sur le jeu évalué, le modèle obtient une accuracy de 0.4759 (loss 2.3651). Da
 ## 10) Limites, erreurs & bug diary (court)
 
 - **Limites connues** (données, compute, modèle) :
-  - grid search limité à 3 epochs par configuration (contraintes de calcul, résultats parfois serrés)
+  - grid search limité à 3 epochs par configuration (contraintes de compute, résultats parfois serrés)
   - dataset zh-plus/tiny-imagenet sans split test annoté exploitable (évaluation finale réalisée sur la validation)
 - **Erreurs rencontrées** 
-  AdamW a un temps de calcul nettement plus long que Adam sur MPS, ce qui a limité mes itérations. C’est dommage car AdamW est en général mieux adapté lorsque l’on utilise du weight decay, car il le décorrèle de la mise à jour d’Adam.
+  AdamW a un temps de calcul nettement plus long que Adam sur MPS, ce qui a limité mes itérations. C’est dommage car AdamW est en général mieux adapté lorsque l’on utilise du weight decay, car il le décorrèle de la mise à jour d’Adam. (run_lr00-1_wd0-0001)
  **solutions** :
  Je suis resté sur Adam pour conserver un temps d’entraînement raisonnable et pouvoir explorer plus de configurations.
 - **Idées « si plus de temps/compute »** (une phrase) :
 J’aimerais tester un scheduler et pousser l’entraînement vers 100 epochs pour vérifier si les configurations à plus faible LR finissent par rattraper ou dépasser. 
+
+- **Choix**
+J’ai choisi de réaliser ce projet sur ma machine personnelle pour apprendre à travailler avec mon propre matériel et vérifier que je pouvais entraîner un modèle de machine learning dans de bonnes conditions. J’ai aussi fait quelques runs dédiés à l’optimisation des performances (ils ne sont pas inclus dans le dépôt final). Sur MacBook Pro M1 (MPS), j’ai constaté qu’un faible nombre de workers est préférable, et qu’augmenter le batch size n’accélère l’entraînement que marginalement. J’ai ajouté une option cache_in_ram, mais elle n’a malheureusement pas apporté de gain significatif. Je suspecte que le goulot d’étranglement ne venait pas du chargement brut des fichiers mais plus du prétraitement des images et du transfert des batchs vers le GPU (MPS), ce qui limite l’impact du caching.
 
 ---
 
@@ -432,5 +437,8 @@ python -m src.evaluate --config configs/config.yaml --checkpoint artifacts/best.
   -  https://huggingface.co/datasets/zh-plus/tiny-imagenet
 
 * Toute ressource externe substantielle (une ligne par référence).
+  - https://www-inf.telecom-sudparis.eu/COURS/CSC8607/Supports/?page=main
+  - aide au code : Chatgpt 5.2 thinking et Gemini 3 pro
+
 
 
