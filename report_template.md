@@ -70,7 +70,7 @@ Normalisation ImageNet pour stabiliser l’optimisation et aligner les statistiq
 
 **D7.** Les prétraitements diffèrent-ils entre train/val/test (ils ne devraient pas, sauf recadrage non aléatoire en val/test) ?
 
-Le preprocessing identique sur les trois splits ; seule l’augmentation (flip/crop/jitter) est appliquée au train uniquement
+Le preprocessing identique sur les trois splits, seule l’augmentation (flip/crop/jitter) est appliquée au train uniquement
 
 ### 1.4 Augmentation de données — _train uniquement_
 
@@ -82,6 +82,7 @@ Le preprocessing identique sur les trois splits ; seule l’augmentation (flip/c
 j'ai augmenté la diversité visuelle (symétries, légers recadrages/padding, variations de couleur) pour limiter l’overfit.  
 
 **D9.** Les augmentations **conservent-elles les labels** ? Justifiez pour chaque transformation retenue.
+
 les transformations géométriques légères, flip et colorimétriques ne changent pas la classe.
 
 ### 1.5 Sanity-checks
