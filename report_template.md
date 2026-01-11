@@ -384,8 +384,8 @@ J’ai choisi de réaliser ce projet sur ma machine personnelle pour apprendre �
 - **Config utilisée** : joindre un extrait de `configs/config.yaml` (sections pertinentes)
 
 ```
-stage_repeats: [2, 2, 2]   # (N1,N2,N3) dans {1,2,3}
-stage_channels: [64, 128, 256]  # (C1,C2,C3)
+stage_repeats: [2, 2, 2]   
+stage_channels: [64, 128, 256]  
 
 train:
   seed: 42
@@ -394,7 +394,7 @@ train:
   epochs: 20
   max_steps: null           # entier ou null
   overfit_small: false      # true pour sur-apprendre sur un petit échantillon
-  #overfit_small_size: 4096   # taille du sous-échantillon quand overfit_small=true
+  #overfit_small_size: 4096   # taille du sous-échantillon  overfit_small=true
   val_subset_size: null      # optionnel: nombre d'exemples utilisés pour la validation (null = tout)
 
   optimizer:
